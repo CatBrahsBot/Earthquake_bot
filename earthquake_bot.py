@@ -26,8 +26,13 @@ def fetch_quakes():
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": msg}
+    payload = {
+        "chat_id": CHAT_ID,
+        "text": msg,
+        "parse_mode": "Markdown"
+    }
     requests.post(url, json=payload)
+
 
 def main():
     print("🌍 Earthquake alert bot running...")
@@ -42,13 +47,14 @@ def main():
                 place = props["place"]
                 time_ms = props["time"]
                 time_str = datetime.utcfromtimestamp(time_ms / 1000).strftime("%Y-%m-%d %H:%M UTC")
-                msg = f"🌎 M{mag} earthquake — {place}\n🕒 {time_str}"
+                msg = f"*🌎 M{mag} earthquake*\n_{place}_\n🕒 `{time_str}`"
                 send_telegram(msg)
                 print("Sent:", msg)
         time.sleep(300)  # wait 5 minutes between checks
 
 if __name__ == "__main__":
     main()
+
 
 
 
