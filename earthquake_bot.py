@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 # === CONFIG ===
 TELEGRAM_TOKEN = "TELEGRAM_TOKEN"
 CHAT_ID = "CHAT_ID"
-MIN_MAGNITUDE = 6
+MIN_MAGNITUDE = 2
 
 # === URLs ===
 USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
@@ -49,4 +49,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
