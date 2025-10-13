@@ -3,9 +3,9 @@ import requests
 from datetime import datetime, timedelta
 
 # === CONFIG ===
-TELEGRAM_TOKEN = "7950480008:AAHJLpwKaepL-JvRXPTYHfRSZPtHRZyfd1A"
-CHAT_ID = "840250183"
-MIN_MAGNITUDE = 6.5
+TELEGRAM_TOKEN = "TELEGRAM_TOKEN"
+CHAT_ID = "CHAT_ID"
+MIN_MAGNITUDE = 6
 
 # === URLs ===
 USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
@@ -49,3 +49,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
