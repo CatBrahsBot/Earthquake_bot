@@ -42,12 +42,13 @@ def main():
                 place = props["place"]
                 time_ms = props["time"]
                 time_str = datetime.utcfromtimestamp(time_ms / 1000).strftime("%Y-%m-%d %H:%M UTC")
-                msg = f"⚠️ M{mag} Earthquake\nLocation: {place}\nTime: {time_str}"
+                msg = f"🌎 M{mag} earthquake — {place}\n🕒 {time_str}"
                 send_telegram(msg)
                 print("Sent:", msg)
         time.sleep(300)  # wait 5 minutes between checks
 
 if __name__ == "__main__":
     main()
+
 
 
