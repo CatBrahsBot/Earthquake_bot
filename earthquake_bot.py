@@ -13,6 +13,7 @@ USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 # Store already-sent quake IDs
 seen = set()
 
+
 def fetch_quakes():
     # Get quakes in the last hour above threshold
     starttime = (datetime.utcnow() - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")
@@ -23,6 +24,7 @@ def fetch_quakes():
     }
     r = requests.get(USGS_URL, params=params)
     return r.json().get("features", [])
+
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
@@ -45,15 +47,21 @@ def main():
                 props = q["properties"]
                 mag = props["mag"]
                 place = props["place"]
+                url = props["url"]
                 time_ms = props["time"]
                 time_str = datetime.utcfromtimestamp(time_ms / 1000).strftime("%Y-%m-%d %H:%M UTC")
-                msg = f"*🌎 M{mag} earthquake*\n_{place}_\n🕒 `{time_str}`"
+                
+                msg = f"*🌎 M{mag} earthquake*\n_{place}_\n🕒 `{time_str}`\n[USGS report]({url})"
                 send_telegram(msg)
                 print("Sent:", msg)
+
         time.sleep(300)  # wait 5 minutes between checks
+
 
 if __name__ == "__main__":
     main()
+
+
 
 
 
