@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 MIN_MAGNITUDE = float(os.getenv("MIN_MAGNITUDE", 4))
-POLL_SECONDS = int(os.getenv("POLL_SECONDS", 60))
+POLL_SECONDS = int(os.getenv("POLL_SECONDS", 30))
 USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 SEEN_FILE = "seen.json"
 
@@ -117,6 +117,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
