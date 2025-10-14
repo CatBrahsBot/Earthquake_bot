@@ -16,7 +16,6 @@ SEEN_FILE = "seen.json"
 seen = set()
 last_check = datetime.now(timezone.utc) - timedelta(minutes=5)
 
-
 # === HELPERS ===
 def load_seen():
     """Load seen quake IDs from file."""
@@ -29,7 +28,6 @@ def load_seen():
             print("Error loading seen file:", e)
             seen = set()
 
-
 def save_seen():
     """Persist seen quake IDs to file."""
     try:
@@ -38,10 +36,10 @@ def save_seen():
     except Exception as e:
         print("Error saving seen file:", e)
 
-
 def fetch_quakes():
     """Get recent earthquakes since last check."""
     global last_check
+    # 2-minute overlap so we don’t miss delayed reports
     start = (last_check - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%S") + "Z"
     params = {
         "format": "geojson",
@@ -56,43 +54,8 @@ def fetch_quakes():
     except Exception as e:
         print("Error fetching quakes:", e)
         data = []
-    last_check = datetime.now(timezone.utc)
-    return data
+    last_check = datetime.now(_
 
-
-def send_telegram(msg):
-    """Send message to Telegram."""
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": msg, "parse_mode": "Markdown"}
-    try:
-        r = requests.post(url, json=payload, timeout=10)
-        if r.status_code != 200:
-            print("Telegram send error:", r.text)
-    except Exception as e:
-        print("Error sending Telegram message:", e)
-
-
-def process_quakes(quakes):
-    """Send new quakes to Telegram."""
-    for q in quakes:
-        qid = q.get("id")
-        if not qid or qid in seen:
-            continue
-
-        props = q["properties"]
-        mag = props.get("mag")
-        place = props.get("place")
-        url = props.get("url")
-        t_ms = props.get("time")
-
-        if mag is None or place is None or t_ms is None:
-            continue
-
-        seen.add(qid)
-        save_seen()
-
-        time_str = datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-        msg = f"*🌎 M{mag}*
 
 
 
