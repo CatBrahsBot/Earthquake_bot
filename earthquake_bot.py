@@ -2,7 +2,7 @@ import os
 import time
 import json
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # === CONFIG ===
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -14,7 +14,7 @@ SEEN_FILE = "seen.json"
 
 # === STATE ===
 seen = set()
-last_check = datetime.utcnow() - timedelta(minutes=5)
+last_check = datetime.now(timezone.utc) - timedelta(minutes=5)
 
 
 # === HELPERS ===
@@ -42,7 +42,6 @@ def save_seen():
 def fetch_quakes():
     """Get recent earthquakes since last check."""
     global last_check
-    # 2-minute overlap so we don’t miss late reports
     start = (last_check - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%S") + "Z"
     params = {
         "format": "geojson",
@@ -57,7 +56,7 @@ def fetch_quakes():
     except Exception as e:
         print("Error fetching quakes:", e)
         data = []
-    last_check = datetime.utcnow()
+    last_check = datetime.now(timezone.utc)
     return data
 
 
@@ -92,31 +91,10 @@ def process_quakes(quakes):
         seen.add(qid)
         save_seen()
 
-        time_str = datetime.utcfromtimestamp(t_ms / 1000).strftime("%Y-%m-%d %H:%M UTC")
-        msg = f"*🌎 M{mag} earthquake*\n_{place}_\n🕒 `{time_str}`\n[USGS report]({url})"
-        send_telegram(msg)
-        print("Sent:", msg)
+        time_str = datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        msg = f"*🌎 M{mag}*
 
 
-# === MAIN LOOP ===
-def main():
-    print("🌍 CatBrahsQuakeAlertBot running (worker mode)")
-    load_seen()
-    global last_check
-    last_check = datetime.utcnow() - timedelta(minutes=5)
-
-    while True:
-        quakes = fetch_quakes()
-        if quakes:
-            process_quakes(quakes)
-            print(f"Checked {len(quakes)} quakes at {datetime.utcnow().strftime('%H:%M:%S')} UTC")
-        else:
-            print("No new quakes found.")
-        time.sleep(POLL_SECONDS)
-
-
-if __name__ == "__main__":
-    main()
 
 
 
