@@ -40,6 +40,7 @@ def main():
     print("🌍 Earthquake alert bot running...")
     while True:
         quakes = fetch_quakes()
+        print("Fetched", len(quakes), "earthquakes")
         for q in quakes:
             qid = q["id"]
             if qid not in seen:
@@ -60,6 +61,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
