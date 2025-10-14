@@ -32,7 +32,7 @@ seen = set()
 
 def fetch_quakes():
     """Get quakes from the past hour above the magnitude threshold."""
-    starttime = (datetime.utcnow() - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S") + "Z"
+    starttime = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S") + "Z"
     params = {
         "format": "geojson",
         "starttime": starttime,
@@ -87,6 +87,7 @@ if __name__ == "__main__":
     # Start small Flask server to keep Render alive
     threading.Thread(target=run_server).start()
     main()
+
 
 
 
