@@ -12,7 +12,7 @@ sys.stdout.reconfigure(line_buffering=True)
 # === CONFIG ===
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
-MIN_MAGNITUDE = 2
+MIN_MAGNITUDE = 6
 
 # === URLS ===
 USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
@@ -87,6 +87,7 @@ if __name__ == "__main__":
     # Start small Flask server to keep Render alive
     threading.Thread(target=run_server).start()
     main()
+
 
 
 
