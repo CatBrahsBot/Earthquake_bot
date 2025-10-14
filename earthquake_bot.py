@@ -54,7 +54,9 @@ def fetch_quakes():
     except Exception as e:
         print("Error fetching quakes:", e)
         data = []
-    last_check = datetime.now(_
+    last_check = datetime.now(timezone.utc)
+
+
 
 
 
