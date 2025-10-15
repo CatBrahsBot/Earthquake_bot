@@ -55,24 +55,63 @@ def fetch_quakes():
         print("Error fetching quakes:", e)
         data = []
     last_check = datetime.now(timezone.utc)
+    return data
 
+def send_telegram(msg):
+    """Send message to Telegram."""
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": CHAT_ID,
+        "text": msg,
+        "parse_mode": "Markdown"
+    }
+    try:
+        r = requests.post(url, json=payload, timeout=10)
+        if r.status_code != 200:
+            print("Telegram send error:", r.text)
+    except Exception as e:
+        print("Error sending Telegram message:", e)
 
+def process_quakes(quakes):
+    """Send new quakes to Telegram."""
+    for q in quakes:
+        qid = q.get("id")
+        if not qid or qid in seen:
+            continue
 
+        props = q.get("properties", {})
+        mag = props.get("mag")
+        place = props.get("place")
+        url = props.get("url")
+        t_ms = props.get("time")
 
+        if mag is None or place is None or t_ms is None:
+            continue
 
+        seen.add(qid)
+        save_seen()
 
+        time_str = datetime.fromtimestamp(t_ms / 1000, tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        msg = f"*🌎 M{mag} earthquake*\n_{place}_\n🕒 `{time_str}`\n[USGS report]({url})"
+        send_telegram(msg)
+        print("Sent:", msg)
 
+# === MAIN LOOP ===
+def main():
+    print("🌍 CatBrahsQuakeAlertBot running (worker mode)")
+    load_seen()
+    global last_check
+    last_check = datetime.now(timezone.utc) - timedelta(minutes=5)
 
+    while True:
+        quakes = fetch_quakes()
+        if quakes:
+            process_quakes(quakes)
+            print(f"Checked {len(quakes)} quakes at {datetime.now(timezone.utc).strftime('%H:%M:%S')} UTC")
+        else:
+            print("No new quakes found.")
+        time.sleep(POLL_SECONDS)
 
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    main()
 
